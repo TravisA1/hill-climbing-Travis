@@ -45,7 +45,7 @@ def climb_hill_to_max(func:NoisyFunction) -> Tuple[List[Tuple[int, int]],Tuple[i
         random.shuffle(relative_steps)
         for delta in relative_steps:
             temp_pt = (pt[0]+delta[0], pt[1]+delta[1])
-            if temp_pt[0] < 0 or temp_pt[1] < 0 or temp_pt[0]>=WINDOW_SIZE or temp_pt[1]>=WINDOW_SIZE:
+            if not in_bounds(temp_pt):
                 continue
             if func.get_value_at_point(temp_pt) > val_to_beat:
                 pt = temp_pt
@@ -54,6 +54,10 @@ def climb_hill_to_max(func:NoisyFunction) -> Tuple[List[Tuple[int, int]],Tuple[i
 
     # if we got here, then after our last move, none of the four directions showed an improvement.
     return stops, pt
+
+
+def in_bounds(pt:Tuple[int, int])-> bool:
+   return pt[0]>-1 and pt[1]>-1 and pt[0]<WINDOW_SIZE and pt[1]<WINDOW_SIZE
 
 if __name__ == "__main__":
     main()
