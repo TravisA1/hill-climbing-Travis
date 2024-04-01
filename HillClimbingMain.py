@@ -10,6 +10,7 @@ NUM_CLIMBERS = 15
 WINDOW_SIZE = 700
 MODE_GREEDY = 0
 MODE_ANNEALING = 1
+MODE_GRADIENT = 2
 def main():
     global mode
     mode = MODE_GREEDY
@@ -89,7 +90,7 @@ def climb_hill_to_max(func:NoisyFunction) -> Tuple[List[Tuple[int, int]],Tuple[i
         # if we got here, then after our last move, none of the four directions showed an improvement.
         return stops, pt
 
-    if mode == MODE_ANNEALING:
+    elif mode == MODE_ANNEALING:
         temp = 1
         alpha = 0.9
         min_temp = 0.0001
@@ -115,6 +116,30 @@ def climb_hill_to_max(func:NoisyFunction) -> Tuple[List[Tuple[int, int]],Tuple[i
             # print(f"{temp=}")
         # print (f"{best=}")
         pt = best_pt
+        return stops, pt
+
+    elif mode == MODE_GRADIENT:
+        step_multiplier = 15000
+        alpha = 0.99
+        while True:
+            stops.append(pt)
+            if pt[0] == 0:
+                d_r = func.get_value_at(1, pt[1]) - func.get_value_at_point(pt)
+            else:
+                d_r = func.get_value_at_point(pt) - func.get_value_at(pt[0] - 1, pt[1])
+            if pt[1] == 0:
+                d_c = func.get_value_at(pt[0], 1) - func.get_value_at_point(pt)
+            else:
+                d_c = func.get_value_at_point(pt) - func.get_value_at(pt[0], pt[1] - 1)
+            new_pt = (
+            max(0, min(func.get_size() - 1, int(pt[0] + step_multiplier * d_r / func.get_value_at_point(pt)))),
+            max(0, min(func.get_size() - 1, int(pt[1] + step_multiplier * d_c / func.get_value_at_point(pt)))))
+            # print(f"{d_r=:3.2}\t{d_c=:3.2}\t{start_pt=}\t{new_pt=}")
+            if new_pt == pt:
+                break
+            step_multiplier *= alpha
+            pt = new_pt
+        # print(f"{step_multiplier=}")
         return stops, pt
 
 
