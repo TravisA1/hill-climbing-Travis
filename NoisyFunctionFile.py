@@ -24,3 +24,10 @@ class NoisyFunction:
     def to_ndarray(self):
         temp = np.array(self.values)
         return (temp * 256).astype(np.uint8)
+
+    def actual_max(self) -> Tuple[float, Tuple[int, int]]:
+        temp = np.array(self.values)
+        print(f"{int(np.argmax(temp)/self.get_size())=}")
+        print(f"{np.argmax(temp)%self.get_size()=}")
+
+        return np.max(temp), (int(np.argmax(temp) / self.get_size()), np.argmax(temp) % self.get_size())
